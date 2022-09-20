@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { useEffect } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import http from '../../http';
+import { toast } from 'react-toastify';
+
 
 export default function EditCategory(props) {
 
@@ -10,6 +12,12 @@ export default function EditCategory(props) {
     const navigate = useNavigate();
     // const { id } = usersParameter();
     const { id } = useParams();
+
+    const showToastMessage = (message) => {
+        toast.success(message, {
+            position: toast.POSITION.TOP_RIGHT
+        });
+    };
 
     useEffect(() => {
         fetchCategory()
@@ -33,6 +41,7 @@ export default function EditCategory(props) {
 
     const submitUpdateCategory = () => {
         http.put("/category/" + id, inputs).then((res) => {
+            showToastMessage("Category Update Successfully");
             navigate('/category', { replace: true });
         });
     }

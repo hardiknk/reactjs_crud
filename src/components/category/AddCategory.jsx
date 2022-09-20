@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import http from '../../http'
+import { toast } from 'react-toastify';
 
 export default function AddCategory() {
     const navigate = useNavigate();
@@ -14,9 +15,15 @@ export default function AddCategory() {
         const value = eve.target.value;
         setInputs(values => ({ ...values, [name]: value }))
     }
+    const showToastMessage = (message) => {
+        toast.success(message, {
+            position: toast.POSITION.TOP_RIGHT
+        });
+    };
 
     const submitCategoryForm = () => {
         http.post("/category", inputs).then((res) => {
+            showToastMessage("Category Added Successfully");
             navigate('/category', { replace: true });
         });
     }

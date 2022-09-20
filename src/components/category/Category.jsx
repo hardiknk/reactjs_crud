@@ -4,21 +4,29 @@ import { Link } from 'react-router-dom';
 import http from '../../http';
 import testData from '../../test.json'
 import Pagination from '../Pagination';
+import { ToastContainer, toast } from 'react-toastify';
+
 
 export default function Category() {
 
     const [Categories, setCategories] = useState([]);
-    const [pagesize, setPagesize] = useState(0);
     const [totalRecords, setTotalRecords] = useState(0);
-    const [currentPage, setCurrentPage] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
     const [totalPageCount, setTotalPageCount] = useState(0);
+    const [status, setStatus] = useState(0);
 
+    //toaster message code 
+    const showToastMessage = (message) => {
+        toast.success(message, {
+            position: toast.POSITION.TOP_RIGHT
+        });
+    };
 
+    const fetchCategoryData = async (cpNumber = null) => {
+        const cPage = cpNumber !== null ? cpNumber : currentPage;
 
-    const fetchCategoryData = async () => {
-        await http.get("/category").then((res) => {
+        await http.get("/category", { params: { page: cPage } }).then((res) => {
             setCategories(res.data.data);
-            setPagesize(res.data.paginate.page_size);
             setTotalRecords(res.data.paginate.total_item);
             setCurrentPage(res.data.paginate.current_page);
             setTotalPageCount(res.data.paginate.total_page_count);
@@ -26,18 +34,32 @@ export default function Category() {
     }
 
 
+    //change the status on click 
+    const handleStatus = (eve) => {
+        showToastMessage("Category Update Successfully");
+        const name = eve.target.name;
+        const value = eve.target.checked;
+        const category_id = eve.target.id;
+        http.patch("/category/" + category_id, { category_id: category_id, category_status: value }).then(res => {
+            fetchCategoryData();
+        });
+
+    }
+
     useEffect(() => {
-        fetchCategoryData()
+        fetchCategoryData();
     }, [])
 
     const handleDeleteCategory = (id) => {
         http.delete("category/" + id).then(res => {
-            fetchCategoryData()
+            fetchCategoryData();
         });
+        showToastMessage("Category Delete Successfully");
     }
 
     const paginateData = (pageNumber) => {
-        // setCurrentPage(pageNumber);
+        setCurrentPage(pageNumber);
+        fetchCategoryData(pageNumber);
     }
 
     return (
@@ -46,7 +68,7 @@ export default function Category() {
                 <Link className='btn btn-primary' to="/add-category"> Add Category </Link>
             </div>
 
-            <table className="table table-hover table-striped table-bordered">
+            <table className="table table-hover table-striped table-bordered table-responsive">
                 <thead>
                     <tr>
                         <th scope="col">#</th>
@@ -63,7 +85,11 @@ export default function Category() {
                                 <td>{res.id}</td>
                                 <td>{res.title}</td>
                                 <td>{res.description}</td>
-                                <td>{res.is_active == "y" ? "active" : "inactive"}</td>
+                                <td> <label className="switch">
+                                    <input type="checkbox" checked={res.is_active == "y" ? "checked" : ""} id={res.id} onChange={handleStatus} />
+                                    <span className="slider round"></span>
+                                </label> </td>
+
                                 <td> <Link className='btn btn-warning' to={{ pathname: "/edit-category/" + res.id }} > Edit  </Link>
                                     <button className='btn btn-danger' onClick={eve => handleDeleteCategory(res.id)} > Delete  </button>
                                 </td>
@@ -74,7 +100,9 @@ export default function Category() {
 
                 </tbody>
             </table>
-            <Pagination currentPage={currentPage} totalCount={totalRecords} totalPageCount={totalPageCount} pageSize={pagesize} paginateData={paginateData} />
+            <Pagination currentPage={currentPage} totalCount={totalRecords} totalPageCount={totalPageCount} paginateData={paginateData} />
+            <ToastContainer />
+
         </div>
     )
 }

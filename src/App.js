@@ -2,7 +2,6 @@
 import './App.css';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from './components/Navbar';
-import Registration from './components/Registration';
 import Category from './components/category/Category';
 import Post from './components/post/Post';
 import NoPage from './components/NoPage';
