@@ -8,7 +8,6 @@ import { toast } from 'react-toastify';
 export default function EditCategory(props) {
 
     const [inputs, setInputs] = useState({});
-    const [users, setUsers] = useState([]);
     const navigate = useNavigate();
     // const { id } = usersParameter();
     const { id } = useParams();
@@ -48,9 +47,7 @@ export default function EditCategory(props) {
 
     return (
         <div className='container' style={{ marginTop: "20px" }}>
-
             <h1>Update Category</h1>
-
             <div className="form-group">
                 <label htmlFor="title"> Title </label>
                 <input type="text" className="form-control" value={inputs.title || ''} onChange={handleChange} name="title" id="title" placeholder="Enter Category Name" />

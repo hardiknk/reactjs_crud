@@ -13,8 +13,9 @@ export default function AddCategory() {
     const handleChange = (eve) => {
         const name = eve.target.name;
         const value = eve.target.value;
-        setInputs(values => ({ ...values, [name]: value }))
+        setInputs(values => ({ ...values, [name]: value }));
     }
+
     const showToastMessage = (message) => {
         toast.success(message, {
             position: toast.POSITION.TOP_RIGHT
